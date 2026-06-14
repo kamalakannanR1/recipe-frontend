@@ -83,7 +83,7 @@ export default function Home(){
                       localStorage.setItem('mealPlannerTemp', JSON.stringify(cur))
                       setPlannerIds(cur.map(i=>i._id))
                       try{ window.dispatchEvent(new Event('mealPlannerUpdated')) }catch(e){}
-                      navigate('/mealplanner')   // ✅ React Router navigation
+                      navigate('/mealplanner') 
                     }} 
                     className={"mt-2 px-3 py-1 rounded text-sm btn-primary " + 
                       (plannerIds.includes(r._id) ? 'opacity-50 cursor-not-allowed' : '')}>
