@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,body,#root{height:100%}
+body{background: linear-gradient(180deg,#fbfffd 0%,#f6fbfa 60%,#f3f7f6 100%); color: #0f1724; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale}
+
+/* component helpers */
+.btn-primary{@apply px-4 py-2 rounded-md text-white bg-primary-deep hover:bg-primary-hover transition shadow-sm}
+.card{@apply bg-white rounded-lg shadow-sm hover:shadow-md transition overflow-hidden border border-gray-100}
+
+/* Form input defaults for better contrast and UX */
+input[type="text"], input[type="email"], input[type="password"], input[type="number"], textarea, select, .form-control {
+	@apply bg-white text-gray-900 border border-gray-200 rounded p-3 placeholder-gray-400 w-full shadow-sm text-base font-medium;
+}
+
+input:focus, textarea:focus, select:focus, .form-control:focus {
+	@apply outline-none ring-4 ring-primary-soft;
+}
+
+/* Slightly darker placeholder for readability */
+input::placeholder, textarea::placeholder { color: #9aa6b2 }
+
+/* Disabled form controls look muted */
+input:disabled, textarea:disabled, button:disabled { @apply opacity-50 cursor-not-allowed }
+
+/* Page container to center and soften edges */
+.page-container { @apply max-w-4xl mx-auto px-6 }
