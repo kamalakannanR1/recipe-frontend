@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import api from '../api'
+import api, { assetUrl } from '../api'
 
 export default function MealPlanner(){
   const [plans, setPlans] = useState([])
@@ -77,7 +77,7 @@ export default function MealPlanner(){
           <div className="space-y-2">
             {temp.map((t,i)=> (
               <div key={i} role="link" tabIndex="0" onClick={()=>navigate(`/r/${t._id}`, { state: { fromPlanner: true } })} onKeyDown={e=>{ if (e.key === 'Enter' || e.key === ' ') navigate(`/r/${t._id}`, { state: { fromPlanner: true } }) }} className="p-2 bg-white rounded shadow flex items-center gap-3 cursor-pointer hover:-translate-y-0.5 hover:shadow-md">
-                {t.images && t.images[0] ? <img src={(t.images[0].startsWith && (t.images[0].startsWith('http://')||t.images[0].startsWith('https://')))? t.images[0] : (`http://localhost:5000${t.images[0]}`)} alt="thumb" className="w-16 h-12 object-cover"/> : null}
+                {t.images && t.images[0] ? <img src={assetUrl(t.images[0])} alt="thumb" className="w-16 h-12 object-cover"/> : null}
                 <div className="flex-1">
                   <div className="font-semibold text-primary-deep">{t.title}</div>
                   {typeof t.avg !== 'undefined' && (

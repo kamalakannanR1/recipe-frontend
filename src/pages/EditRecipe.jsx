@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import api from '../api'
+import api, { assetUrl } from '../api'
 import { useNavigate, useParams, useLocation } from 'react-router-dom'
 
 export default function EditRecipe(){
@@ -86,7 +86,7 @@ export default function EditRecipe(){
           </div>
           <div>
             <label className="text-sm font-medium">Images</label>
-            {existingImages.length > 0 && <div className="flex flex-wrap gap-2 mt-2 mb-2">{existingImages.map((image, index)=><img key={index} src={image.startsWith('http') ? image : `http://localhost:5000${image}`} alt="Current recipe" className="w-20 h-20 object-cover rounded-lg" />)}</div>}
+            {existingImages.length > 0 && <div className="flex flex-wrap gap-2 mt-2 mb-2">{existingImages.map((image, index)=><img key={index} src={assetUrl(image)} alt="Current recipe" className="w-20 h-20 object-cover rounded-lg" />)}</div>}
             <input type="file" accept="image/*" multiple onChange={onFiles} className="mt-1" />
           </div>
           <div>

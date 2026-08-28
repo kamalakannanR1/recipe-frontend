@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import api from '../api'
+import api, { assetUrl } from '../api'
 import { Link, useParams, useNavigate, useLocation } from 'react-router-dom'
 import StarRating from '../components/StarRating'
 
@@ -106,7 +106,7 @@ export default function RecipeDetail(){
         <div className="px-5 pb-5 sm:px-8 sm:pb-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {recipe.images && recipe.images.map((s,i)=>{
-              const src = (s.startsWith && (s.startsWith('http://') || s.startsWith('https://'))) ? s : (`http://localhost:5000${s}`)
+              const src = assetUrl(s)
               return <img key={i} src={src} alt={`${recipe.title} ${i + 1}`} className="w-full aspect-[4/3] object-cover rounded-xl" />
             })}
           </div>

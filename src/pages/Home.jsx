@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import api from '../api'
+import api, { assetUrl } from '../api'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import StarRating from '../components/StarRating'
 
@@ -59,10 +59,7 @@ export default function Home(){
           <Link to={`/r/${r._id}`} key={r._id} className="p-4 card flex gap-4 hover:-translate-y-1">
             <div className="w-32 h-28 sm:w-36 sm:h-32 bg-[#e8f0eb] flex-shrink-0 rounded-lg overflow-hidden">
               {r.images && r.images[0] ? (() => {
-                const s = r.images[0]
-                const src = (s.startsWith('http://') || s.startsWith('https://')) 
-                  ? s 
-                  : (`http://localhost:5000${s}`)
+                const src = assetUrl(r.images[0])
                 return <img src={src} alt="thumb" className="w-full h-full object-cover"/>
               })() : null}
             </div>

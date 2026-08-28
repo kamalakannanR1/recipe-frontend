@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import api from '../api'
+import api, { assetUrl } from '../api'
 import { Link, useNavigate } from 'react-router-dom'
 
 export default function Dashboard(){
@@ -29,7 +29,7 @@ export default function Dashboard(){
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {data.recipes.slice(0, 4).map(r=> (
             <Link key={r._id} to={`/r/${r._id}`} className="card p-5 flex items-center justify-between gap-4 hover:-translate-y-1">
-              {r.images?.[0] && <img src={r.images[0].startsWith('http') ? r.images[0] : `http://localhost:5000${r.images[0]}`} alt="" className="w-20 h-20 rounded-lg object-cover" />}
+              {r.images?.[0] && <img src={assetUrl(r.images[0])} alt="" className="w-20 h-20 rounded-lg object-cover" />}
               <div className="flex-1 min-w-0"><div className="font-semibold text-lg text-primary-deep truncate">{r.title}</div><div className="text-sm text-gray-600 mt-1 line-clamp-2">{r.description || 'A recipe from your kitchen journal.'}</div><div className="flex flex-wrap gap-2 mt-3 text-xs text-gray-500">{r.cuisine && <span className="px-2 py-1 rounded-full bg-accent-gold/15 text-primary-deep">{r.cuisine}</span>}{r.cookTime && <span className="px-2 py-1 rounded-full bg-gray-100">{r.cookTime}</span>}{(r.dietary || []).map(type=><span key={type} className="px-2 py-1 rounded-full bg-primary-soft/20 text-primary-deep">{type}</span>)}</div></div>
               <span className="text-primary-deep text-xl">→</span>
             </Link>
@@ -41,7 +41,7 @@ export default function Dashboard(){
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {favorites.slice(0, showAllFavorites ? favorites.length : 4).map(f=> (
             <Link key={f._id} to={`/r/${f._id}`} className="card p-5 flex items-center justify-between gap-4 hover:-translate-y-1">
-              {f.images?.[0] && <img src={f.images[0].startsWith('http') ? f.images[0] : `http://localhost:5000${f.images[0]}`} alt="" className="w-20 h-20 rounded-lg object-cover" />}
+              {f.images?.[0] && <img src={assetUrl(f.images[0])} alt="" className="w-20 h-20 rounded-lg object-cover" />}
               <div className="flex-1"><div className="font-semibold text-lg text-primary-deep">{f.title}</div><div className="text-sm text-gray-500 mt-1">Saved favorite</div></div>
               <span className="text-accent-gold text-xl">♥</span>
             </Link>

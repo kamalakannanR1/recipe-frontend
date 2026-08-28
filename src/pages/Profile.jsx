@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import api from '../api'
+import api, { assetUrl } from '../api'
 
 export default function Profile(){
   const [user, setUser] = useState(null)
@@ -48,7 +48,7 @@ export default function Profile(){
       <div className="mb-6"><p className="uppercase tracking-[.2em] text-xs font-bold text-accent-gold mb-2">Your account</p><h2 className="text-4xl sm:text-5xl font-bold text-primary-deep">Profile settings</h2><p className="mt-2 text-gray-600">Shape your public profile and keep your account secure.</p></div>
       <div className="grid grid-cols-1 lg:grid-cols-[.8fr_1.2fr] gap-5">
       <section className="bg-primary-deep text-white rounded-2xl p-6 shadow-sm">
-        {user.avatarUrl ? <img src={`http://localhost:5000${user.avatarUrl}`} alt="avatar" className="w-24 h-24 rounded-full object-cover border-4 border-white/30" /> : <div className="w-24 h-24 bg-white/15 rounded-full flex items-center justify-center text-3xl">{user.name?.[0]?.toUpperCase()}</div>}
+        {user.avatarUrl ? <img src={assetUrl(user.avatarUrl)} alt="avatar" className="w-24 h-24 rounded-full object-cover border-4 border-white/30" /> : <div className="w-24 h-24 bg-white/15 rounded-full flex items-center justify-center text-3xl">{user.name?.[0]?.toUpperCase()}</div>}
         <h3 className="text-2xl font-semibold mt-5">{user.name}</h3>
         <p className="text-teal-100 mt-1 break-all">{user.email}</p>
         <div className="mt-6 pt-5 border-t border-white/20 text-sm text-teal-100">Your email is used for account access and cannot be changed here.</div>
