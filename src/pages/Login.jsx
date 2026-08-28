@@ -1,19 +1,17 @@
 import React, { useState } from 'react'
 import api from '../api'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 export default function Login(){
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const nav = useNavigate()
-  const location = useLocation()
-  const from = (location.state && location.state.from) || '/'
   const onSubmit = async e => {
     e.preventDefault()
     try {
       const res = await api.post('/api/auth/login', { email, password })
       localStorage.setItem('token', res.data.token)
-      nav(from, { replace: true })
+      nav('/dashboard', { replace: true })
     } catch (err) {
       alert(err.response?.data?.error || 'Login failed')
     }

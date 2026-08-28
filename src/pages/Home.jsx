@@ -14,7 +14,9 @@ export default function Home(){
     const ingredient = params.get('ingredient')
     const cuisine = params.get('cuisine')
     const dietary = params.get('dietary')
-    api.get('/api/recipes', { params: { q, ingredient, cuisine, dietary } })
+    const filters = { q, ingredient, cuisine, dietary }
+    const hasFilters = Object.values(filters).some(value => value)
+    api.get('/api/recipes', hasFilters ? { params: filters } : undefined)
       .then(r => setRecipes(r.data))
       .catch(()=>{})
   },[location.search])
