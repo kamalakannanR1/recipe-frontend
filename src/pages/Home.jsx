@@ -49,11 +49,15 @@ export default function Home(){
 
   return (
     <div>
-      <h2 className="text-3xl mb-6 text-primary-deep">Discover Recipes</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <section className="mb-10 max-w-3xl">
+        <p className="uppercase tracking-[.22em] text-xs font-bold text-accent-gold mb-3">Cook something memorable</p>
+        <h2 className="text-4xl sm:text-5xl leading-tight mb-3 text-primary-deep">Discover recipes worth sharing.</h2>
+        <p className="text-gray-600 text-base sm:text-lg">Find thoughtful, everyday dishes from a community of home cooks.</p>
+      </section>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {recipes.map(r => (
-          <Link to={`/r/${r._id}`} key={r._id} className="p-4 card flex gap-4 transform hover:scale-[1.01]">
-            <div className="w-28 h-20 bg-gray-100 flex-shrink-0">
+          <Link to={`/r/${r._id}`} key={r._id} className="p-4 card flex gap-4 hover:-translate-y-1">
+            <div className="w-32 h-28 sm:w-36 sm:h-32 bg-[#e8f0eb] flex-shrink-0 rounded-lg overflow-hidden">
               {r.images && r.images[0] ? (() => {
                 const s = r.images[0]
                 const src = (s.startsWith('http://') || s.startsWith('https://')) 
@@ -62,15 +66,14 @@ export default function Home(){
                 return <img src={src} alt="thumb" className="w-full h-full object-cover"/>
               })() : null}
             </div>
-            <div>
+            <div className="min-w-0 flex-1">
               <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-primary-deep">{r.title}</h3>
+                <h3 className="font-semibold text-lg text-primary-deep truncate">{r.title}</h3>
                 <StarRating recipe={r} small readOnly />
               </div>
               <p className="text-sm text-gray-600 truncate">{r.description}</p>
               <p className="text-xs text-gray-500">By: {r.author?.name || 'Unknown'}</p>
-              {!logged && (
-                <div className="mt-2">
+              <div className="mt-2">
                   <button 
                     disabled={plannerIds.includes(r._id)} 
                     onClick={(e)=>{ 
@@ -89,8 +92,7 @@ export default function Home(){
                       (plannerIds.includes(r._id) ? 'opacity-50 cursor-not-allowed' : '')}>
                     Add to meal planner
                   </button>
-                </div>
-              )}
+              </div>
             </div>
           </Link>
         ))}

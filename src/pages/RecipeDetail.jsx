@@ -1,23 +1,34 @@
 import React, { useEffect, useState } from 'react'
 import api from '../api'
-import { useParams, useNavigate } from 'react-router-dom'
+import { Link, useParams, useNavigate, useLocation } from 'react-router-dom'
 import StarRating from '../components/StarRating'
 
 function VideoEmbed({ url }){
   if (!url) return null
-  // basic YouTube embed support
-  const m = url.match(/v=([^&]+)/)
-  const id = m ? m[1] : null
-  if (!id) return <a href={url} target="_blank">Watch video</a>
-  return <iframe width="560" height="315" src={`https://www.youtube.com/embed/${id}`} title="Video" frameBorder="0" allowFullScreen />
+  const match = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{11})/)
+  const id = match ? match[1] : null
+  if (!id) return <a href={url} target="_blank" rel="noreferrer" className="inline-block mt-6 text-primary-deep font-semibold hover:text-accent-gold">Watch recipe video →</a>
+  return (
+    <section className="mt-8 bg-[#17211d] rounded-2xl p-3 sm:p-5 shadow-lg">
+      <div className="flex items-center justify-between gap-3 px-2 pb-3">
+        <h3 className="text-white text-lg font-semibold">Watch the recipe</h3>
+        <span className="text-xs uppercase tracking-[.16em] text-teal-200">Video guide</span>
+      </div>
+      <div className="aspect-video overflow-hidden rounded-xl bg-black">
+        <iframe className="w-full h-full" src={`https://www.youtube.com/embed/${id}?rel=0`} title="Recipe video" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen />
+      </div>
+    </section>
+  )
 }
 
 export default function RecipeDetail(){
   const { id } = useParams()
+  const location = useLocation()
   const [recipe, setRecipe] = useState(null)
   const [favState, setFavState] = useState(null)
   const isLoggedIn = Boolean(localStorage.getItem('token'))
   const navigate = useNavigate()
+  const fromPlanner = Boolean(location.state?.fromPlanner)
   const [inPlanner, setInPlanner] = useState(() => {
     const cur = JSON.parse(localStorage.getItem('mealPlannerTemp')||'[]')
     return cur.findIndex(i=>i._id===id) >= 0
@@ -77,12 +88,31 @@ export default function RecipeDetail(){
   if (!recipe) return <div>Loading...</div>
 
   return (
-    <div>
-      <div className="mb-4">
-        <button onClick={() => navigate(isLoggedIn ? '/dashboard' : '/')} className="px-3 py-1 bg-white border border-primary-deep text-primary-deep rounded">Back</button>
+    <div className="max-w-5xl mx-auto">
+      <div className="mb-6">
+        <button onClick={() => navigate(fromPlanner ? '/mealplanner' : (location.state?.fromMyRecipes ? '/my-recipes' : (isLoggedIn ? '/dashboard' : '/')))} className="px-3 py-2 bg-white border border-[#cadbd2] text-primary-deep rounded-lg hover:bg-primary-soft/20">← {fromPlanner ? 'Back to planner' : (location.state?.fromMyRecipes ? 'Back to my recipes' : 'Back to recipes')}</button>
       </div>
-      <h2 className="text-3xl font-bold text-primary-deep">{recipe.title}</h2>
-      <div className="mt-2 flex items-center gap-3">
+      <section className="bg-[#fffefa] rounded-2xl border border-[#e0ebe4] shadow-sm overflow-hidden">
+        <div className="p-5 sm:p-8">
+          <p className="uppercase tracking-[.2em] text-xs font-bold text-accent-gold mb-3">Recipe detail</p>
+          <h2 className="text-4xl sm:text-6xl leading-tight font-bold text-primary-deep max-w-3xl">{recipe.title}</h2>
+          <p className="mt-4 text-lg text-gray-600 max-w-2xl">{recipe.description}</p>
+          <div className="mt-5 flex flex-wrap gap-2 text-sm text-primary-deep">
+            {recipe.author?.name && <span className="px-3 py-1 rounded-full bg-primary-soft/25">By {recipe.author.name}</span>}
+            {recipe.cuisine && <span className="px-3 py-1 rounded-full bg-accent-gold/15">{recipe.cuisine}</span>}
+            {recipe.cookTime && <span className="px-3 py-1 rounded-full bg-gray-100">{recipe.cookTime} min</span>}
+          </div>
+        </div>
+        <div className="px-5 pb-5 sm:px-8 sm:pb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {recipe.images && recipe.images.map((s,i)=>{
+              const src = (s.startsWith && (s.startsWith('http://') || s.startsWith('https://'))) ? s : (`http://localhost:5000${s}`)
+              return <img key={i} src={src} alt={`${recipe.title} ${i + 1}`} className="w-full aspect-[4/3] object-cover rounded-xl" />
+            })}
+          </div>
+        </div>
+      </section>
+      <div className="mt-5 flex flex-wrap items-center gap-3">
         <button onClick={async ()=>{
           try{
             const payload = {}
@@ -91,41 +121,42 @@ export default function RecipeDetail(){
             // optional refresh
             api.get(`/api/recipes/${id}`).then(r=>setRecipe(r.data))
           }catch(e){ console.error(e) }
-        }} className="px-2 py-1 border rounded">♥ {(recipe.likes?recipe.likes.length:0) + (recipe.anonLikes?recipe.anonLikes.length:0)}</button>
-        {!isLoggedIn && (
-          <button disabled={inPlanner} onClick={(e)=>{ e.preventDefault(); const cur = JSON.parse(localStorage.getItem('mealPlannerTemp')||'[]'); const avg = recipe._avg || (recipe.ratings && recipe.ratings.length ? (recipe.ratings.reduce((s,x)=>s+(x.rating||0),0)/recipe.ratings.length) : 0); cur.push({_id: recipe._id, title: recipe.title, images: recipe.images, avg}); localStorage.setItem('mealPlannerTemp', JSON.stringify(cur)); setInPlanner(true); try{ window.dispatchEvent(new Event('mealPlannerUpdated')) }catch(e){}; window.location.href='/mealplanner' }} className={"px-3 py-1 rounded btn-primary " + (inPlanner ? 'opacity-50 cursor-not-allowed' : '')}>Add to meal planner</button>
-        )}
+        }} className="px-4 py-2 border border-[#cadbd2] rounded-lg bg-white text-primary-deep">♥ {(recipe.likes?recipe.likes.length:0) + (recipe.anonLikes?recipe.anonLikes.length:0)}</button>
+        <button disabled={inPlanner} onClick={(e)=>{ e.preventDefault(); const cur = JSON.parse(localStorage.getItem('mealPlannerTemp')||'[]'); const avg = recipe._avg || (recipe.ratings && recipe.ratings.length ? (recipe.ratings.reduce((s,x)=>s+(x.rating||0),0)/recipe.ratings.length) : 0); cur.push({_id: recipe._id, title: recipe.title, images: recipe.images, avg}); localStorage.setItem('mealPlannerTemp', JSON.stringify(cur)); setInPlanner(true); try{ window.dispatchEvent(new Event('mealPlannerUpdated')) }catch(e){}; window.location.href='/mealplanner' }} className={"px-4 py-2 rounded-lg btn-primary " + (inPlanner ? 'opacity-50 cursor-not-allowed' : '')}>{inPlanner ? 'In meal planner' : 'Add to meal planner'}</button>
         <div>
           <button onClick={()=>{ const url = window.location.href; window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(recipe.title)}&url=${encodeURIComponent(url)}`,'_blank') }} className="px-2 py-1 rounded-md bg-primary-soft text-primary-deep border border-primary-deep">Share</button>
         </div>
       </div>
-      <p className="text-gray-600">{recipe.description}</p>
-      <div className="my-4">
-        {recipe.images && recipe.images.map((s,i)=>{
-          const src = (s.startsWith && (s.startsWith('http://') || s.startsWith('https://'))) ? s : (`http://localhost:5000${s}`)
-          return <img key={i} src={src} alt="" className="max-w-xs mr-2 inline" />
-        })}
-      </div>
       <VideoEmbed url={recipe.videoUrl} />
-      <h3 className="mt-4 font-semibold">Ingredients</h3>
-      <ul>{recipe.ingredients && recipe.ingredients.map((ing,i)=>(<li key={i}>{ing.name} {ing.quantity}</li>))}</ul>
-      <h3 className="mt-4 font-semibold">Steps</h3>
-      <ol className="list-decimal ml-6">{recipe.steps && recipe.steps.map((s,i)=>(<li key={i}>{s}</li>))}</ol>
-      <div className="mt-4 flex gap-2">
+      <div className="mt-8 grid grid-cols-1 lg:grid-cols-[.8fr_1.2fr] gap-5">
+        <section className="bg-white rounded-2xl border border-[#e0ebe4] p-5 sm:p-6">
+          <h3 className="text-2xl font-semibold text-primary-deep mb-4">Ingredients</h3>
+          <ul className="space-y-3">{recipe.ingredients && recipe.ingredients.map((ing,i)=>(<li key={i} className="flex justify-between gap-4 border-b border-gray-100 pb-2"><span>{ing.name}</span><span className="text-gray-500 text-sm">{ing.quantity}</span></li>))}</ul>
+        </section>
+        <section className="bg-white rounded-2xl border border-[#e0ebe4] p-5 sm:p-6">
+          <h3 className="text-2xl font-semibold text-primary-deep mb-4">Method</h3>
+          <ol className="list-decimal ml-5 space-y-3 text-gray-700">{recipe.steps && recipe.steps.map((s,i)=>(<li key={i} className="pl-2">{s}</li>))}</ol>
+        </section>
+      </div>
+      <div className="mt-5 flex gap-2">
         {isLoggedIn && <button onClick={toggleFav} className="px-3 py-2 bg-yellow-400 rounded">{favState ? 'Unfavorite' : 'Add to Favorites'}</button>}
         {isOwner && (
           <>
-            <a href={`/edit/${id}`} className="px-3 py-2 bg-blue-600 text-white rounded">Edit</a>
+            <Link to={`/edit/${id}`} state={{ fromMyRecipes: Boolean(location.state?.fromMyRecipes) }} className="px-3 py-2 bg-blue-600 text-white rounded">Edit</Link>
             <button onClick={onDelete} className="px-3 py-2 bg-red-600 text-white rounded">Delete</button>
           </>
         )}
       </div>
-      <div className="mt-8">
-        <div className="mb-4">
-          <h3 className="font-semibold mb-2">Reviews</h3>
-          <StarRating recipe={recipe} />
+      <section className="mt-8 bg-white rounded-2xl border border-[#e0ebe4] p-5 sm:p-6">
+        <div className="mb-5">
+          <h3 className="text-2xl font-semibold text-primary-deep mb-1">Reviews</h3>
+          <p className="text-sm text-gray-600">Community comments and ratings</p>
+          <div className="mt-4 inline-flex items-center gap-3 rounded-xl bg-primary-soft/15 border border-primary-soft/40 px-4 py-3">
+            <span className="text-sm font-semibold text-primary-deep">Recipe rating</span>
+            <StarRating recipe={recipe} readOnly={isLoggedIn} />
+          </div>
         </div>
-        <h3 className="font-semibold mb-2">Comments</h3>
+        <h3 className="text-2xl font-semibold text-primary-deep mb-3">Comments</h3>
         <div className="space-y-3">
           {recipe.comments && recipe.comments.map(c => (
             <div key={c._id} className="p-3 bg-white rounded shadow-sm">
@@ -135,7 +166,7 @@ export default function RecipeDetail(){
           ))}
         </div>
         <CommentForm recipeId={id} onAdded={(comm)=>{ setRecipe(prev=>({...prev, comments: (prev.comments||[]).concat(comm)})) }} />
-      </div>
+      </section>
     </div>
   )
 }

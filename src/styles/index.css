@@ -3,11 +3,12 @@
 @tailwind utilities;
 
 html,body,#root{height:100%}
-body{background: linear-gradient(180deg,#fbfffd 0%,#f6fbfa 60%,#f3f7f6 100%); color: #0f1724; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale}
+body{background: radial-gradient(circle at 85% 0%,rgba(251,191,36,.12),transparent 28rem),linear-gradient(180deg,#fcfdf9 0%,#f3f8f5 60%,#edf3f0 100%); color:#17211d; font-family:"Avenir Next",Avenir,"Segoe UI",sans-serif; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale}
+h1,h2,h3{font-family:Georgia,"Times New Roman",serif; letter-spacing:0}
 
 /* component helpers */
-.btn-primary{@apply px-4 py-2 rounded-md text-white bg-primary-deep hover:bg-primary-hover transition shadow-sm}
-.card{@apply bg-white rounded-lg shadow-sm hover:shadow-md transition overflow-hidden border border-gray-100}
+.btn-primary{@apply px-4 py-2 rounded-md text-white bg-primary-deep hover:bg-primary-hover transition shadow-sm font-semibold}
+.card{@apply bg-white rounded-xl shadow-sm hover:shadow-xl transition overflow-hidden border border-white}
 
 /* Form input defaults for better contrast and UX */
 input[type="text"], input[type="email"], input[type="password"], input[type="number"], textarea, select, .form-control {
@@ -25,4 +26,6 @@ input::placeholder, textarea::placeholder { color: #9aa6b2 }
 input:disabled, textarea:disabled, button:disabled { @apply opacity-50 cursor-not-allowed }
 
 /* Page container to center and soften edges */
-.page-container { @apply max-w-4xl mx-auto px-6 }
+.page-container { @apply max-w-6xl mx-auto px-4 sm:px-6 }
+
+button,a{transition:all .2s ease}

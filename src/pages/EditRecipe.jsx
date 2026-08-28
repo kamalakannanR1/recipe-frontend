@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import api from '../api'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams, useLocation } from 'react-router-dom'
 
 export default function EditRecipe(){
   const { id } = useParams()
+  const location = useLocation()
   const [loading, setLoading] = useState(true)
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
@@ -13,6 +14,7 @@ export default function EditRecipe(){
   const [servings, setServings] = useState(1)
   const [videoUrl, setVideoUrl] = useState('')
   const [images, setImages] = useState([])
+  const [existingImages, setExistingImages] = useState([])
   const nav = useNavigate()
 
   useEffect(()=>{
@@ -26,6 +28,7 @@ export default function EditRecipe(){
       setCookTime(rec.cookTime||'')
       setServings(rec.servings||1)
       setVideoUrl(rec.videoUrl||'')
+      setExistingImages(rec.images || [])
       setLoading(false)
     }).catch(err=>{ alert('Failed to load'); nav('/') })
   },[id])
@@ -52,9 +55,10 @@ export default function EditRecipe(){
 
   if (loading) return <div>Loading...</div>
   return (
-    <div className="max-w-3xl mx-auto p-6">
-      <div className="card p-6">
-        <h2 className="text-2xl mb-4 font-semibold text-primary-deep">Edit Recipe</h2>
+    <div className="max-w-4xl mx-auto">
+      <div className="mb-6"><button type="button" onClick={()=>nav(location.state?.fromMyRecipes ? '/my-recipes' : '/dashboard')} className="px-3 py-2 bg-white border border-[#cadbd2] text-primary-deep rounded-lg hover:bg-primary-soft/20">← Back to {location.state?.fromMyRecipes ? 'my recipes' : 'dashboard'}</button></div>
+      <div className="mb-6"><p className="uppercase tracking-[.2em] text-xs font-bold text-accent-gold mb-2">Refine your dish</p><h2 className="text-4xl sm:text-5xl font-bold text-primary-deep">Edit recipe</h2><p className="mt-2 text-gray-600">Update the details, images, or instructions for your recipe.</p></div>
+      <div className="bg-[#fffefa] rounded-2xl border border-[#e0ebe4] shadow-sm p-5 sm:p-8">
         <form onSubmit={onSubmit} className="space-y-4">
           <div>
             <label className="text-sm font-medium">Title</label>
@@ -82,6 +86,7 @@ export default function EditRecipe(){
           </div>
           <div>
             <label className="text-sm font-medium">Images</label>
+            {existingImages.length > 0 && <div className="flex flex-wrap gap-2 mt-2 mb-2">{existingImages.map((image, index)=><img key={index} src={image.startsWith('http') ? image : `http://localhost:5000${image}`} alt="Current recipe" className="w-20 h-20 object-cover rounded-lg" />)}</div>}
             <input type="file" accept="image/*" multiple onChange={onFiles} className="mt-1" />
           </div>
           <div>

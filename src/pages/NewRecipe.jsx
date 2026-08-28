@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
 import api from '../api'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 
 export default function NewRecipe(){
+  const location = useLocation()
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [ingredients, setIngredients] = useState('')
@@ -46,9 +47,12 @@ export default function NewRecipe(){
   }
 
   return (
-    <div className="max-w-3xl mx-auto p-6">
-      <div className="card p-6">
-        <h2 className="text-2xl mb-4 font-semibold text-primary-deep">Share a Recipe</h2>
+    <div className="max-w-4xl mx-auto">
+      <div className="mb-6">
+        <button type="button" onClick={()=>nav(location.state?.fromMyRecipes ? '/my-recipes' : '/dashboard')} className="px-3 py-2 bg-white border border-[#cadbd2] text-primary-deep rounded-lg hover:bg-primary-soft/20">← Back to {location.state?.fromMyRecipes ? 'my recipes' : 'dashboard'}</button>
+      </div>
+      <div className="mb-6"><p className="uppercase tracking-[.2em] text-xs font-bold text-accent-gold mb-2">Your next signature dish</p><h2 className="text-4xl sm:text-5xl font-bold text-primary-deep">Create a recipe</h2><p className="mt-2 text-gray-600">Share the details that make your dish worth returning to.</p></div>
+      <div className="bg-[#fffefa] rounded-2xl border border-[#e0ebe4] shadow-sm p-5 sm:p-8">
         <form onSubmit={onSubmit} className="space-y-4">
         <div>
           <label className="block text-sm font-medium">Title</label>
@@ -84,7 +88,7 @@ export default function NewRecipe(){
           <label className="block text-sm font-medium">Images (multiple)</label>
           <input type="file" accept="image/*" multiple onChange={onFiles} />
         </div>
-        <button type="submit" className="btn-primary">Submit Recipe</button>
+        <button type="submit" className="btn-primary">Publish recipe →</button>
       </form>
       </div>
     </div>
