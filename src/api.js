@@ -4,9 +4,13 @@ export const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000
 
 export function assetUrl(value) {
   if (!value) return value
-  return value.startsWith('http://') || value.startsWith('https://')
-    ? value
-    : `${apiBaseUrl}${value}`
+  // If already an absolute URL, return as-is
+  if (value.startsWith('http://') || value.startsWith('https://')) {
+    return value
+  }
+  // Ensure leading slash
+  const normalized = value.startsWith('/') ? value : `/${value}`
+  return `${apiBaseUrl}${normalized}`
 }
 
 const api = axios.create({
